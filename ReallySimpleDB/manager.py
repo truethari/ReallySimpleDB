@@ -1,11 +1,12 @@
 import os
 import sqlite3
-from typing import List
-from .utils import DATA_TYPES
+
+from .utils     import DATA_TYPES
 
 class ReallySimpleDB:
     def __init__(self) -> None:
         self._add_columns_cmd = ""
+        self.connection = ""
 
     def __create_connection(self, database):
         self.connection = sqlite3.connect(database)
@@ -18,16 +19,25 @@ class ReallySimpleDB:
         if not os.path.isfile(os.path.realpath(dbpath)):
             self.connection = sqlite3.connect(os.path.realpath(dbpath))
             return True
-        else:
-            raise FileExistsError("'{}' file exists. for replace add parameter 'replace=True'".format(dbpath))
 
-    def add_columns(self, column_name:str, datatype:str="TEXT", primary_key:bool=False, NOT_NULL:bool=False, database:str="", table:str=""):
+        raise FileExistsError(
+            "'{}' file exists. for replace add parameter 'replace=True'".format(dbpath)
+            )
+
+    def add_columns(self,
+            column_name:str,
+            datatype:str="TEXT",
+            primary_key:bool=False,
+            NOT_NULL:bool=False,
+            database:str="",
+            table:str=""):
         if datatype.upper() not in DATA_TYPES:
             raise TypeError("datatype not supported, '{}'".format(datatype))
 
         if database != "":
             if table == "":
                 raise TypeError ("add_columns() missing 1 required positional argument: 'table'")
+
             self.__create_connection(database=database)
             cursor = self.connection.cursor()
             sql_cmd = "ALTER TABLE {} ADD COLUMN {} {}".format(table, column_name, datatype)
@@ -46,10 +56,12 @@ class ReallySimpleDB:
         if NOT_NULL:
             self._add_columns_cmd += " NOT NULL"
 
+        return True
+
     def create_table(self, database:str, table_name:str):
         if self._add_columns_cmd == "":
             raise NotImplementedError("call 'add_columns' function before create table")
-        
+
         sql_cmd = "CREATE TABLE {} ({})".format(table_name, self._add_columns_cmd[1:])
 
         self.__create_connection(database)
