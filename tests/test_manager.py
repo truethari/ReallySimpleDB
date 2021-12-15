@@ -4,17 +4,31 @@ from ReallySimpleDB import dbmanager
 _dbmanager = dbmanager()
 
 def test_create_db():
-    assert _dbmanager.create_db("test.db", replace=True)
+    assert _dbmanager.create_db(dbpath="test.db", replace=True)
     delete_db()
 
-def test_create_table():
-    _dbmanager.create_db("test.db", replace=True)
+def test_create_table_1():
+    _dbmanager.create_db(dbpath="test.db", replace=True)
     _dbmanager.close_connection()
 
     _dbmanager.add_columns(column_name="student_id", primary_key=True)
     _dbmanager.add_columns(column_name="name", NOT_NULL=True)
     _dbmanager.add_columns(column_name="mark", datatype="INT")
     assert _dbmanager.create_table(database="test.db", table_name="STUDENTS")
+
+def test_create_table_2():
+    _dbmanager.clean()
+    _dbmanager.add_columns(column_name="teacher_id", primary_key=True)
+    _dbmanager.add_columns(column_name="name", NOT_NULL=True)
+    _dbmanager.add_columns(column_name="number", datatype="INT")
+    assert _dbmanager.create_table(database="test.db", table_name="TEACHERS")
+
+def test_create_table_3():
+    _dbmanager.clean()
+    _dbmanager.add_columns(column_name="emp_id", primary_key=True)
+    _dbmanager.add_columns(column_name="name", NOT_NULL=True)
+    _dbmanager.add_columns(column_name="number", datatype="INT")
+    assert _dbmanager.create_table(table_name="EMPLOYEES")
 
 def test_add_columns():
     assert _dbmanager.add_columns(column_name="year", database="test.db", table="STUDENTS")
@@ -25,11 +39,23 @@ def test_all_tables_1():
 def test_all_tables_2():
     assert "NON" not in _dbmanager.all_tables("test.db")
 
+def test_all_tables_3():
+    assert "STUDENTS" in _dbmanager.all_tables()
+
+def test_all_tables_4():
+    assert "NON" not in _dbmanager.all_tables()
+
 def test_is_table_1():
-    assert _dbmanager.is_table("test.db", "STUDENTS")
+    assert _dbmanager.is_table(database="test.db", table_name="STUDENTS")
 
 def test_is_table_2():
-    assert not _dbmanager.is_table("test.db", "NON")
+    assert not _dbmanager.is_table(database="test.db", table_name="NON")
+
+def test_is_table_3():
+    assert _dbmanager.is_table(table_name="STUDENTS")
+
+def test_is_table_4():
+    assert not _dbmanager.is_table(table_name="NON")
     delete_db()
 
 def delete_db(database="test.db"):

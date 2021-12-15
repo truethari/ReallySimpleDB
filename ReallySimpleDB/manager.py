@@ -8,10 +8,16 @@ class ReallySimpleDB:
         self._add_columns_cmd = ""
         self.connection = ""
 
+    def clean(self):
+        self._add_columns_cmd = ""
+
     def __create_connection(self, database):
         self.connection = sqlite3.connect(database)
 
-    def create_db(self, dbpath, replace=False):
+    def create_db(self, dbpath:str="", replace=False):
+        if self.connection == "" and not len(dbpath):
+            raise TypeError("create_db() missing 1 required positional argument: 'dbpath'")
+
         if replace:
             if os.path.isfile(os.path.realpath(dbpath)):
                 os.remove(os.path.realpath(dbpath))
@@ -36,7 +42,7 @@ class ReallySimpleDB:
 
         if database != "":
             if table == "":
-                raise TypeError ("add_columns() missing 1 required positional argument: 'table'")
+                raise TypeError("add_columns() missing 1 required positional argument: 'table'")
 
             self.__create_connection(database=database)
             cursor = self.connection.cursor()
@@ -58,24 +64,39 @@ class ReallySimpleDB:
 
         return True
 
-    def create_table(self, database:str, table_name:str):
+    def create_table(self, table_name:str, database:str=""):
+        if self.connection == "" and not len(database):
+            raise TypeError("create_table() missing 1 required positional argument: 'database'")
+
+        if len(database):
+            self.__create_connection(database)
+
         if self._add_columns_cmd == "":
             raise NotImplementedError("call 'add_columns' function before create table")
 
         sql_cmd = "CREATE TABLE {} ({})".format(table_name, self._add_columns_cmd[1:])
 
-        self.__create_connection(database)
         self.connection.execute(sql_cmd)
         return True
 
-    def all_tables(self, database:str):
-        self.__create_connection(database)
+    def all_tables(self, database:str=""):
+        if self.connection == "" and not len(database):
+            raise TypeError("all_tables() missing 1 required positional argument: 'database'")
+
+        if len(database):
+            self.__create_connection(database)
+
         cursor = self.connection.cursor()
         sql_cmd = "SELECT name FROM sqlite_master WHERE type='table';"
         return [student[0] for student in cursor.execute(sql_cmd)]
 
-    def is_table(self, database:str, table_name:str):
-        self.__create_connection(database)
+    def is_table(self, table_name:str, database:str=""):
+        if self.connection == "" and not len(database):
+            raise TypeError("is_table() missing 1 required positional argument: 'database'")
+
+        if len(database):
+            self.__create_connection(database)
+
         if table_name in self.all_tables(database):
             return True
         return False
