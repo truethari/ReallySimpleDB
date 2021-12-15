@@ -14,7 +14,7 @@ class ReallySimpleDB:
     def __create_connection(self, database):
         self.connection = sqlite3.connect(database)
 
-    def create_db(self, dbpath:str="", replace=False):
+    def create_db(self, dbpath:str="", replace:bool=False):
         if self.connection == "" and not len(dbpath):
             raise TypeError("create_db() missing 1 required positional argument: 'dbpath'")
 
@@ -101,8 +101,20 @@ class ReallySimpleDB:
             return True
         return False
 
-    def delete_table(self, database, table_name):
-        pass
+    def delete_table(self, table:str, database:str=""):
+        if self.connection == "" and not len(database):
+            raise TypeError("delete_table() missing 1 required positional argument: 'database'")
+
+        if len(database):
+            self.__create_connection(database)
+
+        if self.is_table(table_name=table):
+            cursor = self.connection.cursor()
+            sql_cmd = "DROP TABLE {};".format(table)
+            cursor.execute(sql_cmd)
+            return True
+
+        return False
 
     def close_connection(self):
         self.connection.close()

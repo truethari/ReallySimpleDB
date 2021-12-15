@@ -56,6 +56,14 @@ def test_is_table_3():
 
 def test_is_table_4():
     assert not _dbmanager.is_table(table_name="NON")
+
+def test_delete_table_1():
+    assert _dbmanager.delete_table(table="EMPLOYEES")
+
+def test_delete_table_2():
+    assert not _dbmanager.delete_table(table="EMPLOYEES")
+
+def test_finally():
     delete_db()
 
 def delete_db(database="test.db"):
