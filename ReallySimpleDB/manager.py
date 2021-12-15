@@ -68,6 +68,18 @@ class ReallySimpleDB:
         self.connection.execute(sql_cmd)
         return True
 
+    def all_tables(self, database:str):
+        self.__create_connection(database)
+        cursor = self.connection.cursor()
+        sql_cmd = "SELECT name FROM sqlite_master WHERE type='table';"
+        return [student[0] for student in cursor.execute(sql_cmd)]
+
+    def is_table(self, database:str, table_name:str):
+        self.__create_connection(database)
+        if table_name in self.all_tables(database):
+            return True
+        return False
+
     def delete_table(self, database, table_name):
         pass
 
