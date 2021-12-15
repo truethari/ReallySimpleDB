@@ -116,6 +116,31 @@ class ReallySimpleDB:
 
         return False
 
+    def get_all_column_types(self, table:str, database:str=""):
+        if self.connection == "" and not len(database):
+            raise TypeError("get_all_column_types() missing 1 required positional argument: 'database'")
+
+        if len(database):
+            self.__create_connection(database)
+
+        if self.is_table(table_name=table, database=database):
+            cursor = self.connection.cursor()
+            sql_cmd = "PRAGMA TABLE_INFO({});".format(table)
+            fetch = cursor.execute(sql_cmd)
+
+            data_dict = {}
+            for data in fetch.fetchall():
+                data_dict[data[1]] = data[2]
+
+            return data_dict
+        return False
+
+    def get_column_type(self, table:str, column:str, database:str=""):
+        all_data = self.get_all_column_types(table=table, database=database)
+        if type(all_data) != bool and column in all_data:
+            return all_data[column]
+        return False
+
     def close_connection(self):
         self.connection.close()
         return True

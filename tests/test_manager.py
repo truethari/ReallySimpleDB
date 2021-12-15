@@ -63,6 +63,23 @@ def test_delete_table_1():
 def test_delete_table_2():
     assert not _dbmanager.delete_table(table="EMPLOYEES")
 
+def test_get_all_column_types_1():
+    assert _dbmanager.get_all_column_types(table="STUDENTS") \
+        == {"student_id": "TEXT", "name": "TEXT", "mark": "INT", "year": "TEXT"}
+
+def test_get_all_column_types_2():
+    assert _dbmanager.get_all_column_types(table="STUDENTS") \
+        != {"student_id": "FF", "name": "FF", "FF": "FF", "FF": "FF"}
+
+def test_get_column_type_1():
+    assert _dbmanager.get_column_type(table="STUDENTS", column="student_id") == "TEXT"
+
+def test_get_column_type_2():
+    assert _dbmanager.get_column_type(table="STUDENTS", column="address") == False
+
+def test_get_column_type_3():
+    assert _dbmanager.get_column_type(table="EMPLOYEES", column="emp_id") == False
+
 def test_finally():
     delete_db()
 
