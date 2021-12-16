@@ -12,21 +12,21 @@ def test_create_table_1():
     _dbmanager.close_connection()
 
     _dbmanager.add_columns(column_name="student_id", primary_key=True)
-    _dbmanager.add_columns(column_name="name", NOT_NULL=True)
+    _dbmanager.add_columns(column_name="name", not_null=True)
     _dbmanager.add_columns(column_name="mark", datatype="INT")
     assert _dbmanager.create_table(database="test.db", table_name="STUDENTS")
 
 def test_create_table_2():
     _dbmanager.clean()
     _dbmanager.add_columns(column_name="teacher_id", primary_key=True)
-    _dbmanager.add_columns(column_name="name", NOT_NULL=True)
+    _dbmanager.add_columns(column_name="name", not_null=True)
     _dbmanager.add_columns(column_name="number", datatype="INT")
     assert _dbmanager.create_table(database="test.db", table_name="TEACHERS")
 
 def test_create_table_3():
     _dbmanager.clean()
     _dbmanager.add_columns(column_name="emp_id", primary_key=True)
-    _dbmanager.add_columns(column_name="name", NOT_NULL=True)
+    _dbmanager.add_columns(column_name="name", not_null=True)
     _dbmanager.add_columns(column_name="number", datatype="INT")
     assert _dbmanager.create_table(table_name="EMPLOYEES")
 

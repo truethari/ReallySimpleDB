@@ -11,7 +11,7 @@ class ReallySimpleDB:
     def clean(self):
         self._add_columns_cmd = ""
 
-    def __create_connection(self, database):
+    def create_connection(self, database):
         self.connection = sqlite3.connect(database)
 
     def create_db(self, dbpath:str="", replace:bool=False):
@@ -34,7 +34,7 @@ class ReallySimpleDB:
             column_name:str,
             datatype:str="TEXT",
             primary_key:bool=False,
-            NOT_NULL:bool=False,
+            not_null:bool=False,
             database:str="",
             table:str=""):
         if datatype.upper() not in DATA_TYPES:
@@ -44,10 +44,10 @@ class ReallySimpleDB:
             if table == "":
                 raise TypeError("add_columns() missing 1 required positional argument: 'table'")
 
-            self.__create_connection(database=database)
+            self.create_connection(database=database)
             cursor = self.connection.cursor()
             sql_cmd = "ALTER TABLE {} ADD COLUMN {} {}".format(table, column_name, datatype)
-            if NOT_NULL:
+            if not_null:
                 sql_cmd += " NOT NULL"
             if primary_key:
                 sql_cmd += " PRIMARY KEY"
@@ -59,7 +59,7 @@ class ReallySimpleDB:
         if primary_key:
             self._add_columns_cmd += " PRIMARY KEY"
 
-        if NOT_NULL:
+        if not_null:
             self._add_columns_cmd += " NOT NULL"
 
         return True
@@ -69,7 +69,7 @@ class ReallySimpleDB:
             raise TypeError("create_table() missing 1 required positional argument: 'database'")
 
         if len(database):
-            self.__create_connection(database)
+            self.create_connection(database)
 
         if self._add_columns_cmd == "":
             raise NotImplementedError("call 'add_columns' function before create table")
@@ -84,7 +84,7 @@ class ReallySimpleDB:
             raise TypeError("all_tables() missing 1 required positional argument: 'database'")
 
         if len(database):
-            self.__create_connection(database)
+            self.create_connection(database)
 
         cursor = self.connection.cursor()
         sql_cmd = "SELECT name FROM sqlite_master WHERE type='table';"
@@ -95,7 +95,7 @@ class ReallySimpleDB:
             raise TypeError("is_table() missing 1 required positional argument: 'database'")
 
         if len(database):
-            self.__create_connection(database)
+            self.create_connection(database)
 
         if table_name in self.all_tables(database):
             return True
@@ -106,7 +106,7 @@ class ReallySimpleDB:
             raise TypeError("delete_table() missing 1 required positional argument: 'database'")
 
         if len(database):
-            self.__create_connection(database)
+            self.create_connection(database)
 
         if self.is_table(table_name=table):
             cursor = self.connection.cursor()
@@ -121,7 +121,7 @@ class ReallySimpleDB:
             raise TypeError("get_all_column_types() missing 1 required positional argument: 'database'")
 
         if len(database):
-            self.__create_connection(database)
+            self.create_connection(database)
 
         if self.is_table(table_name=table, database=database):
             cursor = self.connection.cursor()
