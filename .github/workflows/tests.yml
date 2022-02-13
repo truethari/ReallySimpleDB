@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - beta
+      - alpha
     paths-ignore:
       - "**/.gitignore"
       - "**/pyproject.toml"
