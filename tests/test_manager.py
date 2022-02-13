@@ -86,6 +86,9 @@ def test_get_columns_1():
 def test_get_columns_2():
     assert _dbmanager.get_columns(table="EMPLOYEES") == []
 
+def test_add_record():
+    assert _dbmanager.add_record(table="STUDENTS", record={"student_id": "1010", "name":"ABC", "mark":10, "year":"2022"}) == True
+
 def test_finally():
     delete_db()
 

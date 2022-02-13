@@ -155,6 +155,43 @@ class ReallySimpleDB:
                 columns.append(column)
 
         return columns
+    
+    def add_record(self, table:str, record, database:str=""):
+        if self.connection == "" and not len(database):
+            raise TypeError("add_record() missing 1 required positional argument: 'database'")
+
+        if len(database):
+            self.create_connection(database)
+        
+        if self.is_table(table_name=table, database=database):
+            cursor = self.connection.cursor()
+        
+        tmp_all_columns = self.get_columns(table=table, database=database)
+        all_columns = {}
+        for column in tmp_all_columns:
+            all_columns[column] = ""
+
+        fields = []
+        sql_cmd = "INSERT INTO {} VALUES(".format(table)
+        if isinstance(record, dict):
+            for field in record:
+                if field not in all_columns:
+                    raise NameError("'{}' column is not in the table".format(field))
+                else:
+                    all_columns[field] = record[field]
+            
+            for field in all_columns:
+                fields.append(all_columns[field])
+                sql_cmd+= "?,"
+        
+            sql_cmd = sql_cmd[:-1] + ");"
+
+            cursor.execute(sql_cmd, fields)
+            self.connection.commit()
+        else:
+            raise TypeError("'record' must be dict")
+
+        return True
 
     def close_connection(self):
         self.connection.close()
