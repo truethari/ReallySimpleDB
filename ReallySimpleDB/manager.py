@@ -140,6 +140,21 @@ class ReallySimpleDB:
         if type(all_data) != bool and column in all_data:
             return all_data[column]
         return False
+    
+    def get_columns(self, table:str, database:str=""):
+        if self.connection == "" and not len(database):
+            raise TypeError("get_columns() missing 1 required positional argument: 'database'")
+
+        if len(database):
+            self.create_connection(database)
+
+        column_types = self.get_all_column_types(table=table, database=database)
+        columns = []
+        if isinstance(column_types, dict):
+            for column in column_types:
+                columns.append(column)
+
+        return columns
 
     def close_connection(self):
         self.connection.close()

@@ -80,6 +80,12 @@ def test_get_column_type_2():
 def test_get_column_type_3():
     assert _dbmanager.get_column_type(table="EMPLOYEES", column="emp_id") == False
 
+def test_get_columns_1():
+    assert _dbmanager.get_columns(table="STUDENTS") == ["student_id", "name", "mark", "year"]
+
+def test_get_columns_2():
+    assert _dbmanager.get_columns(table="EMPLOYEES") == []
+
 def test_finally():
     delete_db()
 
