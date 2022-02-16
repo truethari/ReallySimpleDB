@@ -1,3 +1,4 @@
+from ast import Assert
 import os
 from ReallySimpleDB import dbmanager
 
@@ -86,8 +87,15 @@ def test_get_columns_1():
 def test_get_columns_2():
     assert _dbmanager.get_columns(table="EMPLOYEES") == []
 
-def test_add_record():
+def test_add_record_1():
     assert _dbmanager.add_record(table="STUDENTS", record={"student_id": "1010", "name":"ABC", "mark":10, "year":"2022"}) == True
+
+def test_add_record_2():
+    try:
+        _dbmanager.add_record(table="STUDENTS", record={"student_id": 10, "name":"ABC", "mark":10, "year":"2022"})
+        assert False
+    except TypeError:
+        assert True
 
 def test_finally():
     delete_db()

@@ -140,7 +140,7 @@ class ReallySimpleDB:
         if type(all_data) != bool and column in all_data:
             return all_data[column]
         return False
-    
+
     def get_columns(self, table:str, database:str=""):
         if self.connection == "" and not len(database):
             raise TypeError("get_columns() missing 1 required positional argument: 'database'")
@@ -155,18 +155,18 @@ class ReallySimpleDB:
                 columns.append(column)
 
         return columns
-    
+
     def add_record(self, table:str, record, database:str=""):
         if self.connection == "" and not len(database):
             raise TypeError("add_record() missing 1 required positional argument: 'database'")
 
         if len(database):
             self.create_connection(database)
-        
+
         if self.is_table(table_name=table, database=database):
             cursor = self.connection.cursor()
-        
-        tmp_all_columns = self.get_columns(table=table, database=database)
+
+        tmp_all_columns = self.get_all_column_types(table=table, database=database)
         all_columns = {}
         for column in tmp_all_columns:
             all_columns[column] = ""
@@ -178,12 +178,15 @@ class ReallySimpleDB:
                 if field not in all_columns:
                     raise NameError("'{}' column is not in the table".format(field))
                 else:
-                    all_columns[field] = record[field]
-            
+                    if DATA_TYPES[tmp_all_columns[field]] == type(record[field]):
+                        all_columns[field] = record[field]
+                    else:
+                        raise TypeError("The '{}' field requires the '{}' type but got the '{}' type".format(field, DATA_TYPES[tmp_all_columns[field]], type(record[field])))
+
             for field in all_columns:
                 fields.append(all_columns[field])
                 sql_cmd+= "?,"
-        
+
             sql_cmd = sql_cmd[:-1] + ");"
 
             cursor.execute(sql_cmd, fields)
