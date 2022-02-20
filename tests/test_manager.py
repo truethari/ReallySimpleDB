@@ -87,6 +87,12 @@ def test_get_columns_1():
 def test_get_columns_2():
     assert _dbmanager.get_columns(table="EMPLOYEES") == []
 
+def test_get_primary_key_1():
+    assert _dbmanager.get_primary_key(table="STUDENTS") == "student_id"
+
+def test_get_primary_key_2():
+    assert _dbmanager.get_primary_key(table="TEACHERS") == "teacher_id"
+
 def test_add_record_1():
     assert _dbmanager.add_record(table="STUDENTS", record={"student_id": "1010", "name":"ABC", "mark":10, "year":"2022"}) == True
 

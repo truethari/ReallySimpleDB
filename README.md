@@ -1,6 +1,11 @@
-# ReallySimpleDB 🧩 [alpha]
+<h1 align="center">
+ReallySimpleDB 🧩
+
+<img src="assets/images/ReallySimpleDB.png" alt="Icon" height="300"> </img>
 
 [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/09b9e60691484c29b4cac87178b8aaae)](https://www.codacy.com/gh/truethari/ReallySimpleDB/dashboard?utm_source=github.com&utm_medium=referral&utm_content=truethari/ReallySimpleDB&utm_campaign=Badge_Grade)
+
+</h1>
 
 ---
 
@@ -111,6 +116,13 @@ True
 ```console
 >> _dbmanager.get_column_type(table="STUDENTS", column="student_id")
 "TEXT"
+```
+
+### Get primary key of a table
+
+```console
+>> _dbmanager.get_primary_key(table="STUDENTS")
+"student_id"
 ```
 
 ### Add record to table

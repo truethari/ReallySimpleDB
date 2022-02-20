@@ -156,6 +156,23 @@ class ReallySimpleDB:
 
         return columns
 
+    def get_primary_key(self, table:str, database:str=""):
+        if self.connection == "" and not len(database):
+            raise TypeError("get_primary_key() missing 1 required positional argument: 'database'")
+
+        if len(database):
+            self.create_connection(database)
+
+        if self.is_table(table_name=table, database=database):
+            cursor = self.connection.cursor()
+
+            sql_cmd = "SELECT * FROM pragma_table_info('{}') WHERE pk;".format(table)
+            fetch = cursor.execute(sql_cmd)
+
+            return fetch.fetchall()[0][1]
+
+        return False
+
     def add_record(self, table:str, record, database:str=""):
         if self.connection == "" and not len(database):
             raise TypeError("add_record() missing 1 required positional argument: 'database'")
