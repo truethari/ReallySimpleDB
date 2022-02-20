@@ -236,6 +236,32 @@ class ReallySimpleDB:
                 return {}
 
             return record
+    
+    def get_all_records(self, table:str, database:str=""):
+        if self.connection == "" and not len(database):
+            raise TypeError("get_record() missing 1 required positional argument: 'database'")
+
+        if len(database):
+            self.create_connection(database)
+
+        if self.is_table(table_name=table, database=database):
+            cursor = self.connection.cursor()
+
+            sql_cmd = "SELECT * FROM {}".format(table)
+            cursor.execute(sql_cmd)
+            rows = cursor.fetchall()
+
+            columns = self.get_columns(table=table, database=database)
+            records = []
+            tmp_dict = {}
+
+            for row in rows:
+                for index, data in enumerate(row):
+                    tmp_dict[columns[index]] = data
+                records.append(tmp_dict)
+                tmp_dict = {}
+
+            return records
 
     def delete_record(self, table:str, primary_key, database:str=""):
         if self.connection == "" and not len(database):

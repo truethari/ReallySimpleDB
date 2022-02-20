@@ -98,6 +98,9 @@ def test_add_record_1():
     assert _dbmanager.add_record(table="STUDENTS", record={"student_id": "1010", "name":"ABC", "mark":10, "year":"2022"}) == True
 
 def test_add_record_2():
+    assert _dbmanager.add_record(table="STUDENTS", record={"student_id": "1011", "name":"DEF", "mark":100, "year":"2022"}) == True
+
+def test_add_record_3():
     try:
         _dbmanager.add_record(table="STUDENTS", record={"student_id": 10, "name":"ABC", "mark":10, "year":"2022"})
         assert False
@@ -109,6 +112,10 @@ def test_get_record_1():
 
 def test_get_record_2():
     assert _dbmanager.get_record(table="STUDENTS", primary_key="10101") == {}
+
+def test_get_all_records():
+    assert _dbmanager.get_all_records(table="STUDENTS") == [{'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'},
+        {'student_id': '1011', 'name': 'DEF', 'mark': 100, 'year': '2022'}]
 
 def test_delete_record_1():
     assert _dbmanager.delete_record(table="STUDENTS", primary_key="1010")

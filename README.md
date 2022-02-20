@@ -131,6 +131,26 @@ True
 >> _dbmanager.add_record(table="STUDENTS", record={"student_id": "1010", "name":"ABC", "mark":10, "year":"2022"})
 ```
 
+### Get all records from a table
+
+```console
+>> _dbmanager.get_all_records(table="STUDENTS", primary_key="1010")
+[{'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'}, {'student_id': '1011', 'name': 'DEF', 'mark': 100, 'year': '2022'}]
+```
+
+### Get record from a table
+
+```console
+>> _dbmanager.get_record(table="STUDENTS", primary_key="1010")
+{'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'}
+```
+
+### Delete record from a table
+
+```console
+>> _dbmanager.delete_record(table="STUDENTS", primary_key="1010")
+```
+
 ## 🌱 Contributing Guide
 
 - Fork the project from the `alpha` branch and submit a Pull Request (PR)
