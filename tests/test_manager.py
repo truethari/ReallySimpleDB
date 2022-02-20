@@ -1,5 +1,6 @@
 from ast import Assert
 import os
+from re import X
 from ReallySimpleDB import dbmanager
 
 _dbmanager = dbmanager()
@@ -108,6 +109,9 @@ def test_get_record_1():
 
 def test_get_record_2():
     assert _dbmanager.get_record(table="STUDENTS", primary_key="10101") == {}
+
+def test_delete_record_1():
+    assert _dbmanager.delete_record(table="STUDENTS", primary_key="1010")
 
 def test_finally():
     delete_db()

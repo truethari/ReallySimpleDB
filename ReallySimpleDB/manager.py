@@ -237,6 +237,21 @@ class ReallySimpleDB:
 
             return record
 
+    def delete_record(self, table:str, primary_key, database:str=""):
+        if self.connection == "" and not len(database):
+            raise TypeError("delete_record() missing 1 required positional argument: 'database'")
+
+        if len(database):
+            self.create_connection(database)
+
+        if self.is_table(table_name=table, database=database):
+            cursor = self.connection.cursor()
+            sql = "DELETE FROM {} WHERE {}=?".format(table, self.get_primary_key(table=table, database=database))
+            cursor.execute(sql, (primary_key,))
+            self.connection.commit()
+
+        return True
+
     def close_connection(self):
         self.connection.close()
         return True
