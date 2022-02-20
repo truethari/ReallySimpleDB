@@ -103,6 +103,12 @@ def test_add_record_2():
     except TypeError:
         assert True
 
+def test_get_record_1():
+    assert _dbmanager.get_record(table="STUDENTS", primary_key="1010") == {'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'}
+
+def test_get_record_2():
+    assert _dbmanager.get_record(table="STUDENTS", primary_key="10101") == {}
+
 def test_finally():
     delete_db()
 

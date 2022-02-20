@@ -213,6 +213,30 @@ class ReallySimpleDB:
 
         return True
 
+    def get_record(self, table:str, primary_key, database:str=""):
+        if self.connection == "" and not len(database):
+            raise TypeError("get_record() missing 1 required positional argument: 'database'")
+
+        if len(database):
+            self.create_connection(database)
+
+        if self.is_table(table_name=table, database=database):
+            cursor = self.connection.cursor()
+
+            sql_cmd = "SELECT * FROM {} WHERE {}=?;".format(table, self.get_primary_key(table=table, database=database))
+            fetch = cursor.execute(sql_cmd, (primary_key,))
+
+            columns = self.get_columns(table=table, database=database)
+            record = {}
+
+            try:
+                for index, data in enumerate(fetch.fetchall()[0]):
+                    record[columns[index]] = data
+            except IndexError:
+                return {}
+
+            return record
+
     def close_connection(self):
         self.connection.close()
         return True
