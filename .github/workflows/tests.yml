@@ -1,4 +1,4 @@
-name: ReallySimpleDB tests
+name: tests
 
 on:
   push:

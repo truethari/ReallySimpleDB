@@ -1,17 +1,10 @@
-<h1 align="center">
+<center><h1>
 ReallySimpleDB 🧩
+</h1>
 
 <img src="assets/images/ReallySimpleDB.png" alt="Icon" height="300"> </img>
 
-[![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/09b9e60691484c29b4cac87178b8aaae)](https://www.codacy.com/gh/truethari/ReallySimpleDB/dashboard?utm_source=github.com&utm_medium=referral&utm_content=truethari/ReallySimpleDB&utm_campaign=Badge_Grade)
-
-</h1>
-
----
-
-**🔧 This is still in development and may cause errors when using certain functions.**
-
----
+[![PyPI version](https://img.shields.io/pypi/v/ReallySimpleDB.svg?logo=pypi&logoColor=FFE873)](https://pypi.org/project/ReallySimpleDB/) [![tests](https://github.com/truethari/ReallySimpleDB/actions/workflows/tests.yml/badge.svg?branch=alpha)](https://github.com/truethari/ReallySimpleDB/actions/workflows/tests.yml) [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/09b9e60691484c29b4cac87178b8aaae)](https://www.codacy.com/gh/truethari/ReallySimpleDB/dashboard?utm_source=github.com&utm_medium=referral&utm_content=truethari/ReallySimpleDB&utm_campaign=Badge_Grade) [![PyPI downloads](https://img.shields.io/pypi/dm/reallysimpledb.svg)](https://pypistats.org/packages/reallysimpledb)
 
 ## What is This
 
@@ -19,11 +12,15 @@ ReallySimpleDB 🧩
 
 This is a Python application that can be used to manage **sqlite** databases without using any sql command.
 
+</center>
+
 ## 🚀 Installation
 
 You can use pip:
 
-~~pip3 install ReallySimpleDB~~
+```console
+pip3 install ReallySimpleDB
+```
 
 or
 
@@ -75,6 +72,7 @@ If you want to add columns to an existing table, read the **Add column to table*
 
 ```console
 >> all_tables = _dbmanager.all_tables()
+
 ["STUDENT", "EXAM"]
 ```
 
@@ -82,6 +80,7 @@ If you want to add columns to an existing table, read the **Add column to table*
 
 ```console
 >> _dbmanager.is_table(database="test.db", table_name="STUDENTS")
+
 True
 ```
 
@@ -101,6 +100,7 @@ True
 
 ```console
 >> _dbmanager.get_columns(table="STUDENTS")
+
 ["student_id", "name", "mark"]
 ```
 
@@ -108,6 +108,7 @@ True
 
 ```console
 >> all_columns = _dbmanager.get_all_column_types(table="STUDENTS")
+
 {"student_id": "TEXT", "name": "TEXT", "mark": "INT"}
 ```
 
@@ -115,6 +116,7 @@ True
 
 ```console
 >> _dbmanager.get_column_type(table="STUDENTS", column="student_id")
+
 "TEXT"
 ```
 
@@ -122,6 +124,7 @@ True
 
 ```console
 >> _dbmanager.get_primary_key(table="STUDENTS")
+
 "student_id"
 ```
 
@@ -135,6 +138,7 @@ True
 
 ```console
 >> _dbmanager.get_all_records(table="STUDENTS", primary_key="1010")
+
 [{'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'}, {'student_id': '1011', 'name': 'DEF', 'mark': 100, 'year': '2022'}]
 ```
 
@@ -142,6 +146,7 @@ True
 
 ```console
 >> _dbmanager.get_record(table="STUDENTS", primary_key="1010")
+
 {'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'}
 ```
 
@@ -155,8 +160,11 @@ True
 
 ```console
 >> _dbmanager.filter_records(table="STUDENTS", values={"year":"2022"})
+
 [{'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'}, {'student_id': '1011', 'name': 'DEF', 'mark': 100, 'year': '2022'}]
 ```
+
+---
 
 ## 🌱 Contributing Guide
 
