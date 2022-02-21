@@ -1,6 +1,4 @@
-from ast import Assert
 import os
-from re import X
 from ReallySimpleDB import dbmanager
 
 _dbmanager = dbmanager()
@@ -116,6 +114,13 @@ def test_get_record_2():
 def test_get_all_records():
     assert _dbmanager.get_all_records(table="STUDENTS") == [{'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'},
         {'student_id': '1011', 'name': 'DEF', 'mark': 100, 'year': '2022'}]
+
+def test_filter_record_1():
+    assert _dbmanager.filter_records(table="STUDENTS", values={"year":"2022"}) == [{'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'},
+        {'student_id': '1011', 'name': 'DEF', 'mark': 100, 'year': '2022'}]
+
+def test_filter_record_2():
+    assert _dbmanager.filter_records(table="STUDENTS", values={"mark":100, "year":"2022"}) == [{'student_id': '1011', 'name': 'DEF', 'mark': 100, 'year': '2022'}]
 
 def test_delete_record_1():
     assert _dbmanager.delete_record(table="STUDENTS", primary_key="1010")

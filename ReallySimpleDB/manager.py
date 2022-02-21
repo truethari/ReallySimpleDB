@@ -277,6 +277,41 @@ class ReallySimpleDB:
             self.connection.commit()
 
         return True
+    
+    def filter_records(self, table:str, values:dict, database:str=""):
+        if self.connection == "" and not len(database):
+            raise TypeError("delete_record() missing 1 required positional argument: 'database'")
+
+        if len(database):
+            self.create_connection(database)
+
+        if self.is_table(table_name=table, database=database):
+            cursor = self.connection.cursor()
+
+            sql = "SELECT * FROM {} WHERE ".format(table)
+
+            for value in values:
+                try:
+                    sql += value + "='" + values[value] + "' AND "
+                except TypeError:
+                    sql += value + "=" + str(values[value]) + " AND "
+
+            sql = sql[:-5] + ";"
+
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+
+            columns = self.get_columns(table=table, database=database)
+            records = []
+            tmp_dict = {}
+
+            for row in rows:
+                for index, data in enumerate(row):
+                    tmp_dict[columns[index]] = data
+                records.append(tmp_dict)
+                tmp_dict = {}
+
+            return records
 
     def close_connection(self):
         self.connection.close()

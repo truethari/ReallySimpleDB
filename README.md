@@ -151,6 +151,13 @@ True
 >> _dbmanager.delete_record(table="STUDENTS", primary_key="1010")
 ```
 
+### Filter record/s from a table
+
+```console
+>> _dbmanager.filter_records(table="STUDENTS", values={"year":"2022"})
+[{'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'}, {'student_id': '1011', 'name': 'DEF', 'mark': 100, 'year': '2022'}]
+```
+
 ## 🌱 Contributing Guide
 
 - Fork the project from the `alpha` branch and submit a Pull Request (PR)
