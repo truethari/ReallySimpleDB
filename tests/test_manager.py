@@ -1,4 +1,5 @@
 import os
+from sqlite3 import OperationalError
 from ReallySimpleDB import dbmanager
 
 _dbmanager = dbmanager()
@@ -58,10 +59,16 @@ def test_is_table_4():
     assert not _dbmanager.is_table(table_name="NON")
 
 def test_delete_table_1():
-    assert _dbmanager.delete_table(table="EMPLOYEES")
+    try:
+        _dbmanager.delete_table(table="EMPLOYEES")
+    except OperationalError:
+        assert True
 
 def test_delete_table_2():
-    assert not _dbmanager.delete_table(table="EMPLOYEES")
+    try:
+        _dbmanager.delete_table(table="EMPLOYEES")
+    except OperationalError:
+        assert True
 
 def test_get_all_column_types_1():
     assert _dbmanager.get_all_column_types(table="STUDENTS") \
@@ -78,13 +85,19 @@ def test_get_column_type_2():
     assert _dbmanager.get_column_type(table="STUDENTS", column="address") == False
 
 def test_get_column_type_3():
-    assert _dbmanager.get_column_type(table="EMPLOYEES", column="emp_id") == False
+    try:
+        _dbmanager.get_column_type(table="EMPLOYEES", column="emp_id")
+    except OperationalError:
+        assert True
 
 def test_get_columns_1():
     assert _dbmanager.get_columns(table="STUDENTS") == ["student_id", "name", "mark", "year"]
 
 def test_get_columns_2():
-    assert _dbmanager.get_columns(table="EMPLOYEES") == []
+    try:
+        _dbmanager.get_columns(table="EMPLOYEES")
+    except OperationalError:
+        assert True
 
 def test_get_primary_key_1():
     assert _dbmanager.get_primary_key(table="STUDENTS") == "student_id"
@@ -124,6 +137,12 @@ def test_filter_record_2():
 
 def test_delete_record_1():
     assert _dbmanager.delete_record(table="STUDENTS", primary_key="1010")
+
+def test_delete_record_2():
+    try:
+        _dbmanager.delete_record(table="STUDENTSS", primary_key="1010")
+    except OperationalError:
+        assert True
 
 def test_finally():
     delete_db()

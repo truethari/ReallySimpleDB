@@ -8,6 +8,9 @@ class ReallySimpleDB:
         self._add_columns_cmd = ""
         self.connection = ""
 
+    def _not_table(self, table:str):
+        raise sqlite3.OperationalError("no such table: {}".format(table))
+
     def clean(self):
         self._add_columns_cmd = ""
 
@@ -15,7 +18,7 @@ class ReallySimpleDB:
         self.connection = sqlite3.connect(database)
 
     def create_db(self, dbpath:str="", replace:bool=False):
-        if self.connection == "" and not len(dbpath):
+        if self.connection == "" and not dbpath:
             raise TypeError("create_db() missing 1 required positional argument: 'dbpath'")
 
         if replace:
@@ -65,10 +68,10 @@ class ReallySimpleDB:
         return True
 
     def create_table(self, table_name:str, database:str=""):
-        if self.connection == "" and not len(database):
+        if self.connection == "" and not database:
             raise TypeError("create_table() missing 1 required positional argument: 'database'")
 
-        if len(database):
+        if database:
             self.create_connection(database)
 
         if self._add_columns_cmd == "":
@@ -80,10 +83,10 @@ class ReallySimpleDB:
         return True
 
     def all_tables(self, database:str=""):
-        if self.connection == "" and not len(database):
+        if self.connection == "" and not database:
             raise TypeError("all_tables() missing 1 required positional argument: 'database'")
 
-        if len(database):
+        if database:
             self.create_connection(database)
 
         cursor = self.connection.cursor()
@@ -91,10 +94,10 @@ class ReallySimpleDB:
         return [student[0] for student in cursor.execute(sql_cmd)]
 
     def is_table(self, table_name:str, database:str=""):
-        if self.connection == "" and not len(database):
+        if self.connection == "" and not database:
             raise TypeError("is_table() missing 1 required positional argument: 'database'")
 
-        if len(database):
+        if database:
             self.create_connection(database)
 
         if table_name in self.all_tables(database):
@@ -102,29 +105,31 @@ class ReallySimpleDB:
         return False
 
     def delete_table(self, table:str, database:str=""):
-        if self.connection == "" and not len(database):
+        if self.connection == "" and not database:
             raise TypeError("delete_table() missing 1 required positional argument: 'database'")
 
-        if len(database):
+        if database:
             self.create_connection(database)
 
         if self.is_table(table_name=table):
             cursor = self.connection.cursor()
             sql_cmd = "DROP TABLE {};".format(table)
             cursor.execute(sql_cmd)
+
             return True
 
-        return False
+        self._not_table(table=table)
 
     def get_all_column_types(self, table:str, database:str=""):
-        if self.connection == "" and not len(database):
+        if self.connection == "" and not database:
             raise TypeError("get_all_column_types() missing 1 required positional argument: 'database'")
 
-        if len(database):
+        if database:
             self.create_connection(database)
 
         if self.is_table(table_name=table, database=database):
             cursor = self.connection.cursor()
+
             sql_cmd = "PRAGMA TABLE_INFO({});".format(table)
             fetch = cursor.execute(sql_cmd)
 
@@ -133,19 +138,20 @@ class ReallySimpleDB:
                 data_dict[data[1]] = data[2]
 
             return data_dict
-        return False
+
+        self._not_table(table=table)
 
     def get_column_type(self, table:str, column:str, database:str=""):
         all_data = self.get_all_column_types(table=table, database=database)
-        if type(all_data) != bool and column in all_data:
+        if (not isinstance(all_data, bool)) and (column in all_data):
             return all_data[column]
         return False
 
     def get_columns(self, table:str, database:str=""):
-        if self.connection == "" and not len(database):
+        if self.connection == "" and not database:
             raise TypeError("get_columns() missing 1 required positional argument: 'database'")
 
-        if len(database):
+        if database:
             self.create_connection(database)
 
         column_types = self.get_all_column_types(table=table, database=database)
@@ -157,10 +163,10 @@ class ReallySimpleDB:
         return columns
 
     def get_primary_key(self, table:str, database:str=""):
-        if self.connection == "" and not len(database):
+        if self.connection == "" and not database:
             raise TypeError("get_primary_key() missing 1 required positional argument: 'database'")
 
-        if len(database):
+        if database:
             self.create_connection(database)
 
         if self.is_table(table_name=table, database=database):
@@ -171,53 +177,55 @@ class ReallySimpleDB:
 
             return fetch.fetchall()[0][1]
 
-        return False
+        self._not_table(table=table)
 
     def add_record(self, table:str, record, database:str=""):
-        if self.connection == "" and not len(database):
+        if self.connection == "" and not database:
             raise TypeError("add_record() missing 1 required positional argument: 'database'")
 
-        if len(database):
+        if database:
             self.create_connection(database)
 
         if self.is_table(table_name=table, database=database):
             cursor = self.connection.cursor()
 
-        tmp_all_columns = self.get_all_column_types(table=table, database=database)
-        all_columns = {}
-        for column in tmp_all_columns:
-            all_columns[column] = ""
+            tmp_all_columns = self.get_all_column_types(table=table, database=database)
+            all_columns = {}
+            for column in tmp_all_columns:
+                all_columns[column] = ""
 
-        fields = []
-        sql_cmd = "INSERT INTO {} VALUES(".format(table)
-        if isinstance(record, dict):
-            for field in record:
-                if field not in all_columns:
-                    raise NameError("'{}' column is not in the table".format(field))
-                else:
+            fields = []
+            sql_cmd = "INSERT INTO {} VALUES(".format(table)
+            if isinstance(record, dict):
+                for field in record:
+                    if field not in all_columns:
+                        raise NameError("'{}' column is not in the table".format(field))
+
                     if DATA_TYPES[tmp_all_columns[field]] == type(record[field]):
                         all_columns[field] = record[field]
                     else:
                         raise TypeError("The '{}' field requires the '{}' type but got the '{}' type".format(field, DATA_TYPES[tmp_all_columns[field]], type(record[field])))
 
-            for field in all_columns:
-                fields.append(all_columns[field])
-                sql_cmd+= "?,"
+                for field in all_columns:
+                    fields.append(all_columns[field])
+                    sql_cmd+= "?,"
 
-            sql_cmd = sql_cmd[:-1] + ");"
+                sql_cmd = sql_cmd[:-1] + ");"
 
-            cursor.execute(sql_cmd, fields)
-            self.connection.commit()
-        else:
-            raise TypeError("'record' must be dict")
+                cursor.execute(sql_cmd, fields)
+                self.connection.commit()
+            else:
+                raise TypeError("'record' must be dict")
 
-        return True
+            return True
+
+        self._not_table(table=table)
 
     def get_record(self, table:str, primary_key, database:str=""):
-        if self.connection == "" and not len(database):
+        if self.connection == "" and not database:
             raise TypeError("get_record() missing 1 required positional argument: 'database'")
 
-        if len(database):
+        if database:
             self.create_connection(database)
 
         if self.is_table(table_name=table, database=database):
@@ -236,12 +244,14 @@ class ReallySimpleDB:
                 return {}
 
             return record
-    
-    def get_all_records(self, table:str, database:str=""):
-        if self.connection == "" and not len(database):
-            raise TypeError("get_record() missing 1 required positional argument: 'database'")
 
-        if len(database):
+        self._not_table(table=table)
+
+    def get_all_records(self, table:str, database:str=""):
+        if self.connection == "" and not database:
+            raise TypeError("get_all_records() missing 1 required positional argument: 'database'")
+
+        if database:
             self.create_connection(database)
 
         if self.is_table(table_name=table, database=database):
@@ -263,11 +273,13 @@ class ReallySimpleDB:
 
             return records
 
+        self._not_table(table=table)
+
     def delete_record(self, table:str, primary_key, database:str=""):
-        if self.connection == "" and not len(database):
+        if self.connection == "" and not database:
             raise TypeError("delete_record() missing 1 required positional argument: 'database'")
 
-        if len(database):
+        if database:
             self.create_connection(database)
 
         if self.is_table(table_name=table, database=database):
@@ -276,13 +288,15 @@ class ReallySimpleDB:
             cursor.execute(sql, (primary_key,))
             self.connection.commit()
 
-        return True
-    
-    def filter_records(self, table:str, values:dict, database:str=""):
-        if self.connection == "" and not len(database):
-            raise TypeError("delete_record() missing 1 required positional argument: 'database'")
+            return True
 
-        if len(database):
+        self._not_table(table=table)
+
+    def filter_records(self, table:str, values:dict, database:str=""):
+        if self.connection == "" and not database:
+            raise TypeError("filter_records() missing 1 required positional argument: 'database'")
+
+        if database:
             self.create_connection(database)
 
         if self.is_table(table_name=table, database=database):
@@ -312,6 +326,8 @@ class ReallySimpleDB:
                 tmp_dict = {}
 
             return records
+
+        self._not_table(table=table)
 
     def close_connection(self):
         self.connection.close()
