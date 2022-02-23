@@ -193,7 +193,8 @@ class ReallySimpleDB:
         # if columns exists in the table and given column in the table
         if (not isinstance(all_data, bool)) and (column in all_data):
             return all_data[column]
-        return False
+
+        raise sqlite3.OperationalError("no such column: {}".format(column))
 
     def get_columns(self, table:str, database:str=""):
         """get all the column names list in a table"""
@@ -225,7 +226,6 @@ class ReallySimpleDB:
 
             sql_cmd = "SELECT * FROM pragma_table_info('{}') WHERE pk;".format(table)
             fetch = cursor.execute(sql_cmd)
-
             return fetch.fetchall()[0][1]
 
         # raise OperationalError if the given table not exists

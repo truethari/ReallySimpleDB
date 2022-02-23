@@ -75,6 +75,7 @@ def test_delete_table_1():
     """delete table if table exists"""
     try:
         _dbmanager.delete_table(table="EMPLOYEES")
+        assert False
     except OperationalError:
         assert False
 
@@ -82,6 +83,7 @@ def test_delete_table_2():
     """delete table if table not exists"""
     try:
         _dbmanager.delete_table(table="EMPLOYEES")
+        assert False
     except OperationalError:
         assert True
 
@@ -95,8 +97,12 @@ def test_get_column_type_1():
     assert _dbmanager.get_column_type(table="STUDENTS", column="student_id") == "TEXT"
 
 def test_get_column_type_2():
-    """get data type of a column in a table"""
-    assert _dbmanager.get_column_type(table="STUDENTS", column="address") == False
+    """get data type of not exists column in a table"""
+    try:
+        _dbmanager.get_column_type(table="STUDENTS", column="address")
+        assert False
+    except OperationalError:
+        assert True
 
 def test_get_columns_1():
     """get all the column names list in a table"""
@@ -156,6 +162,7 @@ def test_delete_record_2():
     """delete record from a table when table is not exists"""
     try:
         _dbmanager.delete_record(table="STUDENTSS", primary_key="1010")
+        assert False
     except OperationalError:
         assert True
 
