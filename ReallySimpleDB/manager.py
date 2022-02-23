@@ -18,10 +18,6 @@ class ReallySimpleDB:
         self._add_columns_cmd = ""
         self.connection = ""
 
-    def _not_table(self, table:str):
-        """raise OperationalError if the given table not exists"""
-        raise sqlite3.OperationalError("no such table: {}".format(table))
-
     def clean(self):
         """
         cleans add_columns data
@@ -164,8 +160,8 @@ class ReallySimpleDB:
 
             return True
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def get_all_column_types(self, table:str, database:str=""):
         """get all the column names with the data types in a table"""
@@ -187,8 +183,8 @@ class ReallySimpleDB:
 
             return data_dict
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def get_column_type(self, table:str, column:str, database:str=""):
         """get data type of a column in a table"""
@@ -232,8 +228,8 @@ class ReallySimpleDB:
 
             return fetch.fetchall()[0][1]
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def add_record(self, table:str, record, database:str=""):
         """add a new record to a table"""
@@ -286,8 +282,8 @@ class ReallySimpleDB:
 
             return True
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def get_record(self, table:str, primary_key, database:str=""):
         """get row data / record from a table using the primary key"""
@@ -318,8 +314,8 @@ class ReallySimpleDB:
 
             return record
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def get_all_records(self, table:str, database:str=""):
         """get all data / records of a table"""
@@ -350,8 +346,8 @@ class ReallySimpleDB:
 
             return records
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def delete_record(self, table:str, primary_key, database:str=""):
         """delete record from a table"""
@@ -369,8 +365,8 @@ class ReallySimpleDB:
 
             return True
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def filter_records(self, table:str, values:dict, database:str=""):
         """
@@ -416,8 +412,8 @@ class ReallySimpleDB:
 
             return records
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def close_connection(self):
         """close the connection with the SQLite database file"""
