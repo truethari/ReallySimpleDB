@@ -1,10 +1,10 @@
-<center><h1>
+<h1>
 ReallySimpleDB 🧩
 </h1>
 
-<img src="assets/images/ReallySimpleDB.png" alt="Icon" height="300"> </img>
+<img src="https://raw.githubusercontent.com/truethari/ReallySimpleDB/master/assets/images/ReallySimpleDB.png" alt="Icon" width="465"> </img>
 
-[![PyPI version](https://img.shields.io/pypi/v/ReallySimpleDB.svg?logo=pypi&logoColor=FFE873)](https://pypi.org/project/ReallySimpleDB/) [![tests](https://github.com/truethari/ReallySimpleDB/actions/workflows/tests.yml/badge.svg?branch=alpha)](https://github.com/truethari/ReallySimpleDB/actions/workflows/tests.yml) [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/09b9e60691484c29b4cac87178b8aaae)](https://www.codacy.com/gh/truethari/ReallySimpleDB/dashboard?utm_source=github.com&utm_medium=referral&utm_content=truethari/ReallySimpleDB&utm_campaign=Badge_Grade) [![PyPI downloads](https://img.shields.io/pypi/dm/reallysimpledb.svg)](https://pypistats.org/packages/reallysimpledb)
+[![tests](https://github.com/truethari/ReallySimpleDB/actions/workflows/tests.yml/badge.svg?branch=alpha)](https://github.com/truethari/ReallySimpleDB/actions/workflows/tests.yml) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/befe3049923e4e788f5a1d6d958f6015)](https://www.codacy.com/gh/truethari/ReallySimpleDB/dashboard?utm_source=github.com&utm_medium=referral&utm_content=truethari/ReallySimpleDB&utm_campaign=Badge_Grade) [![PyPI version](https://img.shields.io/pypi/v/ReallySimpleDB.svg?logo=pypi&logoColor=FFE873)](https://pypi.org/project/ReallySimpleDB/) [![made-with-python](https://img.shields.io/badge/Made%20with-Python-1f425f.svg)](https://www.python.org/) [![Downloads](https://pepy.tech/badge/reallysimpledb)](https://pepy.tech/project/reallysimpledb)
 
 ## What is This
 
@@ -12,20 +12,18 @@ ReallySimpleDB 🧩
 
 This is a Python application that can be used to manage **sqlite** databases without using any sql command.
 
-</center>
-
 ## 🚀 Installation
 
 You can use pip:
 
 ```console
-pip3 install ReallySimpleDB
+~$ pip3 install ReallySimpleDB
 ```
 
 or
 
 ```console
-~# python setup.py install
+~$ python setup.py install
 ```
 
 ## 📗 Usage
@@ -52,7 +50,7 @@ or
 
 Here you can not directly call the `create_table` function. Because **sqlite** cannot create table without columns. So you must first define the columns and create a table.
 
-Important: You have to close connection here. If not, code returns error. Because it tries to add column to existing table.
+**Important:** You have to close connection here. If not, code returns error. Because it tries to add column to existing table.
 
 ```console
 >> _dbmanager.close_connection()
@@ -158,6 +156,34 @@ True
 
 ### Filter record/s from a table
 
+If you want to filter **equal values**, add value without any operator.
+
+Examples:
+
+- `{"year":2022}` ✔️
+- `{"year":" == 2022"}` ❌
+
+🖇 Comparison operators
+
+| Comparison Operator |      Description      |
+| :-----------------: | :-------------------: |
+|         !=          |       Not Equal       |
+|          >          |     Greater Than      |
+|         >=          | Greater Than or Equal |
+|          <          |       Less Than       |
+|         <=          |  Less Than or Equal   |
+
+Examples:
+
+- `{"marks":"<= 10"}` ✔️
+- `{"marks":"== 10"}` ❌
+- `{"name":"< ABC"}` ❌ 'Greater Than' and 'Less than' comparisons are not supported with Strings
+
+**Important:** If you are trying to compare strings, please use string between Inch Marks.
+
+- `{"grade":"!= 'A'"}` ✔️
+- `{"grade":"!= A"}` ❌
+
 ```console
 >> _dbmanager.filter_records(table="STUDENTS", values={"year":"2022"})
 
@@ -181,3 +207,11 @@ True
 - Use a sensible number of commit messages as well
 
   - e.g. Your PR should not have 1000s of commits.
+
+### Run pytest without installing package
+
+If you are adding **new functions** as described above, please add test functions to `tests/test_manager.py`.
+
+```console
+~$ python -m pytest -s tests
+```
