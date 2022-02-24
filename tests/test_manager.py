@@ -75,7 +75,7 @@ def test_delete_table_1():
     """delete table if table exists"""
     try:
         _dbmanager.delete_table(table="EMPLOYEES")
-        assert False
+        assert True
     except OperationalError:
         assert False
 
