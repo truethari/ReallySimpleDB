@@ -154,6 +154,14 @@ def test_filter_record_2():
     """get filtered record list from a table"""
     assert _dbmanager.filter_records(table="STUDENTS", values={"mark":100, "year":"2022"}) == [{'student_id': '1011', 'name': 'DEF', 'mark': 100, 'year': '2022'}]
 
+def test_filter_record_3():
+    """get filtered record list from a table: Comparison"""
+    assert _dbmanager.filter_records(table="STUDENTS", values={"mark":" <= 100"}) == [{'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'}, {'student_id': '1011', 'name': 'DEF', 'mark': 100, 'year': '2022'}]
+
+def test_filter_record_4():
+    """get filtered record list from a table: Comparison"""
+    assert _dbmanager.filter_records(table="STUDENTS", values={"mark":" != 100"}) == [{'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'}]
+
 def test_delete_record_1():
     """delete record from a table"""
     assert _dbmanager.delete_record(table="STUDENTS", primary_key="1010")
