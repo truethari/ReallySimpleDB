@@ -75,6 +75,7 @@ def test_delete_table_1():
     """delete table if table exists"""
     try:
         _dbmanager.delete_table(table="EMPLOYEES")
+        assert True
     except OperationalError:
         assert False
 
@@ -82,6 +83,7 @@ def test_delete_table_2():
     """delete table if table not exists"""
     try:
         _dbmanager.delete_table(table="EMPLOYEES")
+        assert False
     except OperationalError:
         assert True
 
@@ -95,8 +97,12 @@ def test_get_column_type_1():
     assert _dbmanager.get_column_type(table="STUDENTS", column="student_id") == "TEXT"
 
 def test_get_column_type_2():
-    """get data type of a column in a table"""
-    assert _dbmanager.get_column_type(table="STUDENTS", column="address") == False
+    """get data type of not exists column in a table"""
+    try:
+        _dbmanager.get_column_type(table="STUDENTS", column="address")
+        assert False
+    except OperationalError:
+        assert True
 
 def test_get_columns_1():
     """get all the column names list in a table"""
@@ -148,6 +154,14 @@ def test_filter_record_2():
     """get filtered record list from a table"""
     assert _dbmanager.filter_records(table="STUDENTS", values={"mark":100, "year":"2022"}) == [{'student_id': '1011', 'name': 'DEF', 'mark': 100, 'year': '2022'}]
 
+def test_filter_record_3():
+    """get filtered record list from a table: Comparison"""
+    assert _dbmanager.filter_records(table="STUDENTS", values={"mark":" <= 100"}) == [{'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'}, {'student_id': '1011', 'name': 'DEF', 'mark': 100, 'year': '2022'}]
+
+def test_filter_record_4():
+    """get filtered record list from a table: Comparison"""
+    assert _dbmanager.filter_records(table="STUDENTS", values={"mark":" != 100"}) == [{'student_id': '1010', 'name': 'ABC', 'mark': 10, 'year': '2022'}]
+
 def test_delete_record_1():
     """delete record from a table"""
     assert _dbmanager.delete_record(table="STUDENTS", primary_key="1010")
@@ -156,6 +170,7 @@ def test_delete_record_2():
     """delete record from a table when table is not exists"""
     try:
         _dbmanager.delete_record(table="STUDENTSS", primary_key="1010")
+        assert False
     except OperationalError:
         assert True
 

@@ -18,10 +18,6 @@ class ReallySimpleDB:
         self._add_columns_cmd = ""
         self.connection = ""
 
-    def _not_table(self, table:str):
-        """raise OperationalError if the given table not exists"""
-        raise sqlite3.OperationalError("no such table: {}".format(table))
-
     def clean(self):
         """
         cleans add_columns data
@@ -164,13 +160,14 @@ class ReallySimpleDB:
 
             return True
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def get_all_column_types(self, table:str, database:str=""):
         """get all the column names with the data types in a table"""
         if self.connection == "" and not database:
-            raise TypeError("get_all_column_types() missing 1 required positional argument: 'database'")
+            raise TypeError(
+                "get_all_column_types() missing 1 required positional argument: 'database'")
 
         if database:
             self.create_connection(database)
@@ -187,8 +184,8 @@ class ReallySimpleDB:
 
             return data_dict
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def get_column_type(self, table:str, column:str, database:str=""):
         """get data type of a column in a table"""
@@ -197,7 +194,8 @@ class ReallySimpleDB:
         # if columns exists in the table and given column in the table
         if (not isinstance(all_data, bool)) and (column in all_data):
             return all_data[column]
-        return False
+
+        raise sqlite3.OperationalError("no such column: {}".format(column))
 
     def get_columns(self, table:str, database:str=""):
         """get all the column names list in a table"""
@@ -229,11 +227,10 @@ class ReallySimpleDB:
 
             sql_cmd = "SELECT * FROM pragma_table_info('{}') WHERE pk;".format(table)
             fetch = cursor.execute(sql_cmd)
-
             return fetch.fetchall()[0][1]
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def add_record(self, table:str, record, database:str=""):
         """add a new record to a table"""
@@ -269,7 +266,8 @@ class ReallySimpleDB:
                     if DATA_TYPES[tmp_all_columns[field]] == type(record[field]):
                         all_columns[field] = record[field]
                     else:
-                        raise TypeError("The '{}' field requires the '{}' type but got the '{}' type".format(field, DATA_TYPES[tmp_all_columns[field]], type(record[field])))
+                        raise TypeError("The '{}' field requires '{}' but got '{}'"
+                        .format(field, DATA_TYPES[tmp_all_columns[field]], type(record[field])))
 
                 # creates the full SQL command
                 for field in all_columns:
@@ -286,8 +284,8 @@ class ReallySimpleDB:
 
             return True
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def get_record(self, table:str, primary_key, database:str=""):
         """get row data / record from a table using the primary key"""
@@ -300,7 +298,8 @@ class ReallySimpleDB:
         if self.is_table(table_name=table, database=database):
             cursor = self.connection.cursor()
 
-            sql_cmd = "SELECT * FROM {} WHERE {}=?;".format(table, self.get_primary_key(table=table, database=database))
+            sql_cmd = "SELECT * FROM {} WHERE {}=?;".format(
+                table, self.get_primary_key(table=table, database=database))
             fetch = cursor.execute(sql_cmd, (primary_key,))
 
             # get columns list using get_columns
@@ -318,8 +317,8 @@ class ReallySimpleDB:
 
             return record
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def get_all_records(self, table:str, database:str=""):
         """get all data / records of a table"""
@@ -350,8 +349,8 @@ class ReallySimpleDB:
 
             return records
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def delete_record(self, table:str, primary_key, database:str=""):
         """delete record from a table"""
@@ -363,14 +362,15 @@ class ReallySimpleDB:
 
         if self.is_table(table_name=table, database=database):
             cursor = self.connection.cursor()
-            sql = "DELETE FROM {} WHERE {}=?".format(table, self.get_primary_key(table=table, database=database))
+            sql = "DELETE FROM {} WHERE {}=?".format(
+                table, self.get_primary_key(table=table, database=database))
             cursor.execute(sql, (primary_key,))
             self.connection.commit()
 
             return True
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def filter_records(self, table:str, values:dict, database:str=""):
         """
@@ -387,12 +387,19 @@ class ReallySimpleDB:
         if self.is_table(table_name=table, database=database):
             cursor = self.connection.cursor()
 
+            operators = [">", "<", "!", "="]
+
             sql = "SELECT * FROM {} WHERE ".format(table)
 
             for value in values:
                 try:
                     # if value is in string type
-                    sql += value + "='" + values[value] + "' AND "
+                    # checks for if value contains any special character
+                    if any(c in operators for c in values[value]):
+                        sql += value + values[value] + " AND "
+                    else:
+                        sql += value + "='" + values[value] + "' AND "
+
                 except TypeError:
                     # if value is in int or float type
                     sql += value + "=" + str(values[value]) + " AND "
@@ -416,8 +423,8 @@ class ReallySimpleDB:
 
             return records
 
-        # if database not exists
-        self._not_table(table=table)
+        # raise OperationalError if the given table not exists
+        raise sqlite3.OperationalError("no such table: {}".format(table))
 
     def close_connection(self):
         """close the connection with the SQLite database file"""
