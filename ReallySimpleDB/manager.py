@@ -79,7 +79,7 @@ class ReallySimpleDB:
             # column to an existing table.
             self.create_connection(database=database)
             cursor = self.connection.cursor()
-            sql_cmd = "ALTER TABLE {} ADD COLUMN {} {}".format(table, column_name, datatype)
+            sql_cmd = "ALTER TABLE " + table + " ADD COLUMN " + column_name + " " + datatype
             if not_null:
                 sql_cmd += " NOT NULL"
             if primary_key:
@@ -90,7 +90,7 @@ class ReallySimpleDB:
         # if table is not defines, it means that the user is trying to add / define
         # a column to a new table. so the following code add SQL syntax globally for
         # use when creating new table
-        self._add_columns_cmd += (",{} {}".format(column_name, datatype))
+        self._add_columns_cmd += "," + column_name + " " + datatype
 
         if primary_key:
             self._add_columns_cmd += " PRIMARY KEY"
@@ -114,7 +114,7 @@ class ReallySimpleDB:
         if self._add_columns_cmd == "":
             raise NotImplementedError("call 'add_columns' function before create table")
 
-        sql_cmd = "CREATE TABLE {} ({})".format(table_name, self._add_columns_cmd[1:])
+        sql_cmd = "CREATE TABLE " + table_name + " (" + self._add_columns_cmd[1:] + ")"
 
         self.connection.execute(sql_cmd)
         return True
@@ -153,7 +153,7 @@ class ReallySimpleDB:
 
         if self.is_table(table_name=table):
             cursor = self.connection.cursor()
-            sql_cmd = "DROP TABLE {};".format(table)
+            sql_cmd = "DROP TABLE " + table + ";"
             cursor.execute(sql_cmd)
 
             return True
@@ -173,7 +173,7 @@ class ReallySimpleDB:
         if self.is_table(table_name=table, database=database):
             cursor = self.connection.cursor()
 
-            sql_cmd = "PRAGMA TABLE_INFO({});".format(table)
+            sql_cmd = "PRAGMA TABLE_INFO(" + table + ");"
             fetch = cursor.execute(sql_cmd)
 
             data_dict = {}
@@ -223,8 +223,8 @@ class ReallySimpleDB:
         if self.is_table(table_name=table, database=database):
             cursor = self.connection.cursor()
 
-            sql_cmd = "SELECT * FROM pragma_table_info('{}') WHERE pk;".format(table)
-            fetch = cursor.execute(sql_cmd)
+            sql_cmd = "SELECT * FROM pragma_table_info(?) WHERE pk;"
+            fetch = cursor.execute(sql_cmd, (table,))
             return fetch.fetchall()[0][1]
 
         # raise OperationalError if the given table not exists
@@ -250,7 +250,7 @@ class ReallySimpleDB:
                 all_columns[column] = ""
 
             fields = []
-            sql_cmd = "INSERT INTO {} VALUES(".format(table)
+            sql_cmd = "INSERT INTO " + table + " VALUES("
 
             # if record is dict type,..
             if isinstance(record, dict):
@@ -296,8 +296,7 @@ class ReallySimpleDB:
         if self.is_table(table_name=table, database=database):
             cursor = self.connection.cursor()
 
-            sql_cmd = "SELECT * FROM {} WHERE {}=?;".format(
-                table, self.get_primary_key(table=table, database=database))
+            sql_cmd = "SELECT * FROM " + table + " WHERE " + self.get_primary_key(table=table, database=database) + "=?;"
             fetch = cursor.execute(sql_cmd, (primary_key,))
 
             # get columns list using get_columns
@@ -329,7 +328,7 @@ class ReallySimpleDB:
         if self.is_table(table_name=table, database=database):
             cursor = self.connection.cursor()
 
-            sql_cmd = "SELECT * FROM {}".format(table)
+            sql_cmd = "SELECT * FROM " + table
             cursor.execute(sql_cmd)
             rows = cursor.fetchall()
 
@@ -360,8 +359,7 @@ class ReallySimpleDB:
 
         if self.is_table(table_name=table, database=database):
             cursor = self.connection.cursor()
-            sql = "DELETE FROM {} WHERE {}=?".format(
-                table, self.get_primary_key(table=table, database=database))
+            sql = "DELETE FROM " + table + " WHERE " + self.get_primary_key(table=table, database=database) + "=?"
             cursor.execute(sql, (primary_key,))
             self.connection.commit()
 
@@ -387,7 +385,7 @@ class ReallySimpleDB:
 
             operators = [">", "<", "!", "="]
 
-            sql = "SELECT * FROM {} WHERE ".format(table)
+            sql = "SELECT * FROM " + table + " WHERE "
 
             for value in values:
                 try:
